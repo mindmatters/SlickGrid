@@ -25,6 +25,7 @@
 
     var defaults = {
       groupItemMetadataProvider: null,
+      rowItemMetadataProvider: function(item) { return null; },
       inlineFilters: false
     };
 
@@ -388,17 +389,18 @@
         return null;
       }
 
-      // overrides for grouping rows
       if (item.__group) {
+        // overrides for grouping rows
         return options.groupItemMetadataProvider.getGroupRowMetadata(item);
       }
-
-      // overrides for totals rows
-      if (item.__groupTotals) {
+      else if (item.__groupTotals) {
+        // overrides for totals rows
         return options.groupItemMetadataProvider.getTotalsRowMetadata(item);
       }
-
-      return null;
+      else {
+        // default metadata provider for other rows
+        return options.rowItemMetadataProvider.getRowMetadata(item);
+      }
     }
 
     function expandCollapseAllGroups(level, collapse) {
@@ -512,7 +514,7 @@
           group = groups[i];
           group.groups = extractGroups(group.rows, group);
         }
-      }      
+      }
 
       groups.sort(groupingInfos[level].comparer);
 
