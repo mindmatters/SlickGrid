@@ -379,6 +379,9 @@
       else if (item && item.__groupTotals && !item.initialized) {
         calculateTotals(item);
       }
+      else if (item && item.__tableTotals && !item.initialized) {
+        calculateTableTotals(item);
+      }
 
       return item;
     }
@@ -396,6 +399,9 @@
       else if (item.__groupTotals) {
         // overrides for totals rows
         return options.groupItemMetadataProvider.getTotalsRowMetadata(item);
+      }
+      else if (item.__tableTotals) {
+        return options.tableTotalsMetadataProvider.getTableTotalsMetadata(item);
       }
       else {
         // default metadata provider for other rows
@@ -548,6 +554,21 @@
         agg.storeResult(totals);
       }
       totals.initialized = true;
+    }
+
+    function calculateTableTotals(tableTotals) {
+      var aggregators = options.tableTotalsMetadataProvider.aggregators;
+      var agg, idx = aggregators.length;
+
+      while (idx--) {
+        agg = aggregators[idx];
+        agg.init();
+        for (var i = 0; i < tableTotals.rows.length; i++) {
+          agg.accumulate(tableTotals.rows[i]);
+        }
+        agg.storeResult(tableTotals);
+      }
+      tableTotals.initialized = true;
     }
 
     function addGroupTotals(group) {
@@ -790,6 +811,8 @@
               // deep object comparison is pretty expensive
               // always considering them 'dirty' seems easier for the time being
               (item.__groupTotals || r.__groupTotals))
+              || (eitherIsNonData &&
+              (item.__tableTotals || r.__tableTotals))
               || item[idProperty] != r[idProperty]
               || (updated && updated[item[idProperty]])
               ) {
@@ -819,6 +842,12 @@
           addTotals(groups);
           newRows = flattenGroupedRows(groups);
         }
+      }
+
+      if (options.tableTotals && newRows.length > 0) {
+        var tableTotals = new Slick.TableTotals();
+        tableTotals.rows = filteredItems.rows;
+        newRows.push(tableTotals);
       }
 
       var diff = getRowDiffs(rows, newRows);

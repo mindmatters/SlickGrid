@@ -15,6 +15,7 @@
       "NonDataRow": NonDataItem,
       "Group": Group,
       "GroupTotals": GroupTotals,
+      "TableTotals": TableTotals,
       "EditorLock": EditorLock,
 
       /***
@@ -381,6 +382,14 @@
   }
 
   GroupTotals.prototype = new NonDataItem();
+
+  function TableTotals() {
+    this.__tableTotals = true;
+    this.rows = null;
+    this.initialized = false;
+  }
+
+  TableTotals.prototype = new NonDataItem()
 
   /***
    * A locking helper to track the active edit controller and ensure that only a single controller
