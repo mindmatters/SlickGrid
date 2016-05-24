@@ -1,0 +1,10 @@
+{
+  "name": "slickgrid",
+  "version": "2.1.0",
+  "description": "SlickGrid is an advanced JavaScript grid/spreadsheet component",
+  "main": "slick.core.js",
+  "author": {
+    "name": "Michael Leibman"
+  },
+  "license": "MIT"
+}
